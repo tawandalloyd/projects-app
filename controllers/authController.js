@@ -63,4 +63,9 @@ exports.login = catchAysnc( async (req,res,next) => {
         return next(new AppError('invalid email or password', 401));
     }
     createSendToken(user,201,res)
-})
+});
+
+//protecting our routes from unAuthenticated users
+exports.protect = (req,res,next) => {
+    
+}

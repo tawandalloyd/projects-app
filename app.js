@@ -13,7 +13,7 @@ app.use((req,res,next) =>{
 })
 
 app.get('/',(req,res)=>{
-    res.status(200).json({message:'hello from server side Tawanda LLOYD Charuka', app : 'housing'})
+    res.status(200).json({message:'hello from server side Gary', app : 'housing'})
 });
 
 app.use('/api/v1/users', userRouter);
