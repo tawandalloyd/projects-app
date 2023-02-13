@@ -66,6 +66,3 @@ exports.login = catchAysnc( async (req,res,next) => {
 });
 
 //protecting our routes from unAuthenticated users
-exports.protect = (req,res,next) => {
-    
-}
