@@ -30,7 +30,7 @@ jobs:
     - run: npm run build --if-present
     - name: Docker build App
       run: |
-        docker build .
+        docker build -t project .
     - name: Docker Login
       env:
         DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
@@ -39,5 +39,5 @@ jobs:
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD  
     - name: Docker Push
       run: |
-        docker tag  tawandalloyd/cd
+        docker tag project tawandalloyd/cd
         docker push tawandalloyd/cd  
