@@ -42,6 +42,9 @@ jobs:
         DOCKER_JWT_SECRET: ${{secrets.DOCKER_JWT_SECRET}}
         DOCKER_PORT: ${{secrets.DOCKER_PORT}}
         
+
+      run: |
+        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
     - name: Create .env file
       run: |
         echo "DATABASE_USERNAME=$DOCKER_USERNAME" >> .env
@@ -50,9 +53,7 @@ jobs:
         echo "JWT_COOKIE_EXPIRES_IN=$DOCKER_JWT_COOKIE_EXPIRES_IN" >> .env
         echo "JWT_EXPIRES_IN=$DOCKER_JWT_EXPIRES_IN" >> .env
         echo "JWT_SECRET=$DOCKER_JWT_SECRET" >> .env
-        echo "PORT=$DOCKER_PORT" >> .env
-      run: |
-        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD  
+        echo "PORT=$DOCKER_PORT" >> .env  
     - name: Docker Push
       run: |
         docker tag projects-app_project-app tawandalloyd/cd
