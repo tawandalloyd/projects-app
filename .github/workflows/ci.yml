@@ -45,12 +45,7 @@ jobs:
       env:
         DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
         DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
-        DOCKER_DATABASE: ${{secrets.DOCKER_DATABASE}}
-        DOCKER_DATABASE_PASSWORD: ${{secrets.DOCKER_DATABASE_PASSWORD}}
-        DOCKER_JWT_COOKIE_EXPIRES_IN: ${{secrets.DOCKER_JWT_COOKIE_EXPIRES_IN}}
-        DOCKER_JWT_EXPIRES_IN: ${{secrets.DOCKER_JWT_EXPIRES_IN}}
-        DOCKER_JWT_SECRET: ${{secrets.DOCKER_JWT_SECRET}}
-        DOCKER_PORT: ${{secrets.DOCKER_PORT}}
+
         
 
       run: |
