@@ -29,8 +29,8 @@ jobs:
     - run: npm ci
     - run: npm run build --if-present
     
-    name: Docker build App
-      run:  docker-compose up -d --build
+    - name: Docker build App
+        run:  docker-compose up -d --build
     - name: Docker Login
       env:
         DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
