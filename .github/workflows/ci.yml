@@ -40,9 +40,8 @@ jobs:
         DOCKER_JWT_COOKIE_EXPIRES_IN: ${{secrets.DOCKER_JWT_COOKIE_EXPIRES_IN}}
         DOCKER_JWT_EXPIRES_IN: ${{secrets.DOCKER_JWT_EXPIRES_IN}}
         DOCKER_JWT_SECRET: ${{secrets.DOCKER_JWT_SECRET}}
-        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
         DOCKER_PORT: ${{secrets.DOCKER_PORT}}
-        DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+        
 
       run: |
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD  
