@@ -4,7 +4,8 @@
   "description": "projects app",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon server.js",
+    "create-env": "printenv > .env",
+    "start": "nodemon server.js",  
     "dev": "nodemon -L server.js"
   },
   "author": "tawanda lolo",

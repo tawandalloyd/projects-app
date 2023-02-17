@@ -1,0 +1,20 @@
+steps:
+- name: 'gcr.io/cloud-builders/npm'
+  args: ['install']
+- name: 'gcr.io/cloud-builders/npm'
+  args: ['install', '--save', '--save-exact']
+- name: 'gcr.io/cloud-builders/npm'
+  args: ["run", "create-env"]
+  env:
+    - 'NODE_ENV=${_NODE_ENV}'
+    - 'DATABASE=${_DATABASE}'
+    - 'DATABASE_PASSWORD=${_DATABASE_PASSWORD}'
+    - 'JWT_SECRET=${_JWT_SECRET}'
+    - 'JWT_EXPIRES_IN=${_JWT_EXPIRES_IN}'
+    - 'JWT_COOKIE_EXPIRES_IN=${_JWT_COOKIE_EXPIRES_IN}'
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['app', 'deploy']
+
+
+
+
