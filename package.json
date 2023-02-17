@@ -5,8 +5,8 @@
   "main": "app.js",
   "scripts": {
     "create-env": "printenv > .env",
-    "start": "nodemon server.js",  
-    "dev": "nodemon -L server.js"
+    "start": "node app.js",
+    "dev": "node -L server.js"
   },
   "author": "tawanda lolo",
   "license": "ISC",

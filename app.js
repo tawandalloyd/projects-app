@@ -1,6 +1,13 @@
 const express = require("express");
 const morgan = require("morgan");
 const userRouter = require('./routes/userRoutes');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+
+//dotenv.config({ path: './config.env'});
+dotenv.config();
+
+const port = process.env.Port || 3000;
 
 const app = express();
 
@@ -17,5 +24,28 @@ app.get('/',(req,res)=>{
 });
 
 app.use('/api/v1/users', userRouter);
+
+
+
+//connecting the app to mongoDb database
+const DB = process.env.DATABASE.replace('<password>', process.env.DATABASE_PASSWORD);
+
+mongoose.set("strictQuery", false);
+mongoose.connect(DB,{
+    useNewUrlParser : true,
+    useUnifiedTopology : true,
+    
+
+}).then (() => {
+    console.log('DB connection was successfull');
+});
+
+
+
+
+app.listen(port, ()=> {
+    console.log(`app is running on port ${port}`)
+})
+
 
 module.exports = app;
