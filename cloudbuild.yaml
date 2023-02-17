@@ -4,6 +4,8 @@ steps:
 - name: 'gcr.io/cloud-builders/npm'
   args: ['install', '--save', '--save-exact']
 - name: 'gcr.io/cloud-builders/npm'
+  args: ['install', 'nodemon']
+- name: 'gcr.io/cloud-builders/npm'
   args: ["run", "create-env"]
   env:
     - 'NODE_ENV=${_NODE_ENV}'
