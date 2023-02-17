@@ -1,4 +1,4 @@
-runtime: nodejs14
+runtime: nodejs18
 
 resources:
   cpu: 1
