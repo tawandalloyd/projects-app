@@ -44,6 +44,11 @@ const userSchema = new mongoose.Schema({
              message : 'passwords are not the same'
          }
      },
+    roles :{
+        type : String,
+        enum :['user', 'admin'],
+        default : 'user'
+     },
     phoneNumber :{
         type : Number,
         required : [true,'please provide cell phone number']

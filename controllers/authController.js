@@ -66,3 +66,76 @@ exports.login = catchAysnc( async (req,res,next) => {
 });
 
 //protecting our routes from unAuthenticated users
+exports.protect = catchAysnc( async(req  , res , next) => {
+
+    // check if token exists 
+  let token;
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer'))
+  {
+    token = req.headers.authorization.split(' ')[1];
+  }
+  if(!token){
+      return next (new AppError('please login to get access', 401));
+  }
+  // verfying the token 
+  const decoded = await promisify(jwt.verify)(token,process.env.JWT_SECRET);
+
+  //check if user still exists
+  const freshUser = await User.findById(decoded.id);
+  if(!freshUser){
+      return next(new AppError('this user no longer exists', 401)
+      )
+  }
+
+  //check if user changed password
+  if(freshUser.changedPasswordAfter(decoded.iat)){
+      return next (new AppError ('user recently changed password. Please login again', 401));
+  }
+
+  req.user = freshUser;
+  next();
+
+});
+
+exports.restrictTo =  (...roles) => {
+  return (req, res,next) =>{
+      if(!roles.includes(req.user.role)){
+          return next(new AppError('user does not have the rights',403));
+      };
+    next();
+  }
+};
+
+//forgot password 
+exports.forgotPassword = catchAsync( async(req,res,next) => {
+  // getting the user based on email address
+  const user = await User.findOne({email : req.body.email});
+
+  if (!user){
+      return next(new AppError('invalid email',404));
+  }
+
+  //generate the reset token
+  const setToken = user.createToken();
+  await user.save({validateBeforeSave : false});
+
+try {
+  const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${setToken}`;
+  await new Email (user,resetURL).sendResetPassword();
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Token sent to email!'
+  });
+} catch (err) {
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save({ validateBeforeSave: false });
+
+  return next(
+    new AppError('There was an error sending the email. Try again later!'),
+    500
+  );
+}
+
+});
