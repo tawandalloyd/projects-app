@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema({
          minlength : 8,
          select : false
      },
+     isVerified: {
+        type:Boolean,
+        default: false
+    },
     confirmPassword :{
          type : String,
          required : [true,'please provide password'],
@@ -55,6 +59,8 @@ const userSchema = new mongoose.Schema({
     },
     passwordChangedAt : Date ,
     passwordResetToken : String,
+    emailVerificationToken : String,
+    emailVerificationExpires : Date,
     passwordResetExpires :Date,
     active : {
         type : Boolean,
@@ -115,6 +121,17 @@ userSchema.methods.createToken = function(){
   this.passwordResetExpires = Date.now()+ 10800000 ;
   //+ 10 * 60 * 1000
   return resetToken;
+}
+
+userSchema.methods.createEmailToken = function(){
+    const emailToken = crypto.randomBytes(32).toString('hex');
+    this.emailVerificationToken = crypto.createHash('sha256').update(emailToken).digest('hex');
+
+    console.log({emailToken}, this.emailVerificationToken );
+
+    this.emailVerificationExpires = Date.now()+ 10800000
+
+    return emailToken;
 }
 
 

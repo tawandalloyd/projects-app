@@ -1,7 +1,11 @@
 const User = require('./../models/userModels');
+const {promisify} = require('util');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const AppError = require('./../utils/appError');
-const catchAysnc = require('./../utils/catchAsync')
+const catchAysnc = require('./../utils/catchAsync');
+const Email = require('./../utils/email');
+const { Console } = require('console');
 
 //creating a jwt token
 const signToken = id => {
@@ -45,21 +49,40 @@ exports.signup = catchAysnc(async (req,res)=>{
             confirmPassword : req.body.confirmPassword,
             phoneNumber : req.body.phoneNumber
         })
-
         createSendToken(user, 201,res)
 });
+
+exports.confirmEmail = catchAysnc( async (req,res,next) =>{
+
+  // get user based on token
+  const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+
+  const user = await User.findOne({emailVerificationToken :hashedToken, emailVerificationExpires : { $gt: Date.now()}  })
+  console.log(user)
+  if(!user){
+    return next(new AppError('the token has expired or it is invalid',404))
+}
+//updating email verification
+user.isVerified = true;
+user.emailVerificationToken = undefined;
+user,emailVerificationExpires = undefined;
+await user.save();
+})
 
 //logging the user to our application
 exports.login = catchAysnc( async (req,res,next) => {
     const {email,password} = req.body
-
+   
     if(!email || !password){
         return next (new AppError('please provide email or password', 404))
     }
 
     const user =  await User.findOne({email}).select('+password');
+    if ( user.isVerified == false){
+      return next(new AppError('email address not verified',401));
+    }
 
-    if(!user || !(await user.correctPassword(password,user.password))){
+    else if(!user || !(await user.correctPassword(password,user.password))){
         return next(new AppError('invalid email or password', 401));
     }
     createSendToken(user,201,res)
@@ -138,4 +161,48 @@ try {
   );
 }
 
+});
+
+exports.resetPassword = catchAysnc( async(req,res,next) =>{
+  // get user based on token
+  const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
+
+  const user = await User.findOne({
+      passwordResetToken :hashedToken,
+      passwordResetExpires : { $gt: Date.now()} 
+  
+  });
+
+  if(!user){
+      return next(new AppError('the token has expired or it is invalid',404))
+  }
+  //updating the new password
+  user.password = req.body.password;
+  user.confirmPassword = req.body.confirmPassword;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+
+  // generating the token and login the user
+  createSendToken(user,200,res);
+});
+
+//updating user password
+exports.updatePassword = catchAysnc( async(req, res, next) => {
+  //get user from collection
+  const user = await User.findById(req.user.id).select('+password');
+  
+  //check if posted current password is correct
+  
+
+  if (!(await user.correctPassword(req.body.currentPassword,user.password))){
+      return next(new AppError('your current password is wrong password is invalid ',401));
+  }
+  //updating the password
+  user.password = req.body.password;
+  user.confirmPassword = req.body.confirmPassword;
+  await user.save();
+
+  //generating token and user signup
+  createSendToken(user,200,res);
 });
