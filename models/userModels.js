@@ -34,10 +34,6 @@ const userSchema = new mongoose.Schema({
          minlength : 8,
          select : false
      },
-     isVerified: {
-        type:Boolean,
-        default: false
-    },
     confirmPassword :{
          type : String,
          required : [true,'please provide password'],
@@ -122,18 +118,6 @@ userSchema.methods.createToken = function(){
   //+ 10 * 60 * 1000
   return resetToken;
 }
-
-userSchema.methods.createEmailToken = function(){
-    const emailToken = crypto.randomBytes(32).toString('hex');
-    this.emailVerificationToken = crypto.createHash('sha256').update(emailToken).digest('hex');
-
-    console.log({emailToken}, this.emailVerificationToken );
-
-    this.emailVerificationExpires = Date.now()+ 10800000
-
-    return emailToken;
-}
-
 
 const Users = mongoose.model('Users', userSchema);
 module.exports = Users;
