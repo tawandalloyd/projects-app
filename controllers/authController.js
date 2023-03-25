@@ -49,6 +49,10 @@ exports.signup = catchAysnc(async (req,res)=>{
             confirmPassword : req.body.confirmPassword,
             phoneNumber : req.body.phoneNumber
         })
+
+        const url = `${req.protocol}://${req.get('host')}/api/v1/users`;
+        await new Email (user,url).sendWelcome();
+    
         createSendToken(user, 201,res)
 });
 
