@@ -40,49 +40,10 @@ const createSendToken = (user, statusCode, res) => {
 //signing the user to our application
 exports.signup = catchAysnc(async (req,res)=>{
 
-        const user = await User.create({
-            name: req.body.name,
-            lastname: req.body.lastname,
-            email : req.body.email,
-            accountType : req.body.accountType,
-            password : req.body.password,
-            confirmPassword : req.body.confirmPassword,
-            phoneNumber : req.body.phoneNumber
-        })
-        // try {
-        // const url = `${req.protocol}://${req.get('host')}/api/v1/users`;
-        // await new Email (user,url).sendWelcome();
-        
-        //   res.status(200).json({
-        //     status: 'success',
-        //     message: 'Token sent to email!'
-        //   });
-        // } catch (err) {
-        //   return next(
-        //     new AppError('There was an error sending the email. Try again later!'),
-        //     500
-        //   );
-        // }
-    
+        const user = await User.create(req.body);
         createSendToken(user, 201,res)
 });
 
-exports.confirmEmail = catchAysnc( async (req,res,next) =>{
-
-  // get user based on token
-  const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
-
-  const user = await User.findOne({emailVerificationToken :hashedToken, emailVerificationExpires : { $gt: Date.now()}  })
-  console.log(user)
-  if(!user){
-    return next(new AppError('the token has expired or it is invalid',404))
-}
-//updating email verification
-user.isVerified = true;
-user.emailVerificationToken = undefined;
-user,emailVerificationExpires = undefined;
-await user.save();
-})
 
 //logging the user to our application
 exports.login = catchAysnc( async (req,res,next) => {
