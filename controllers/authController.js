@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const AppError = require('./../utils/appError');
 const catchAysnc = require('./../utils/catchAsync');
 const Email = require('./../utils/email');
-const { Console } = require('console');
+
 
 //creating a jwt token
 const signToken = id => {
@@ -49,9 +49,20 @@ exports.signup = catchAysnc(async (req,res)=>{
             confirmPassword : req.body.confirmPassword,
             phoneNumber : req.body.phoneNumber
         })
-
+        try {
         const url = `${req.protocol}://${req.get('host')}/api/v1/users`;
         await new Email (user,url).sendWelcome();
+        
+          res.status(200).json({
+            status: 'success',
+            message: 'Token sent to email!'
+          });
+        } catch (err) {
+          return next(
+            new AppError('There was an error sending the email. Try again later!'),
+            500
+          );
+        }
     
         createSendToken(user, 201,res)
 });
