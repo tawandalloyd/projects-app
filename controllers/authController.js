@@ -38,11 +38,29 @@ const createSendToken = (user, statusCode, res) => {
   };
 
 //signing the user to our application
-exports.signup = catchAysnc(async (req,res)=>{
-
+exports.signup = async (req,res)=>{
+        try{
         const user = await User.create(req.body);
-        createSendToken(user, 201,res)
-});
+        res.status(201).json({
+          status : "sucess",
+          data : {
+            user
+          }
+        })
+      }
+      catch(e){
+        res.status(404).json({
+          status : "error",
+          message :{
+            message : "ooops something crushed our server",
+            e
+          }
+        })
+      }
+
+
+        //createSendToken(user, 201,res)
+};
 
 
 //logging the user to our application
