@@ -38,14 +38,14 @@ const createSendToken = (user, statusCode, res) => {
   };
 
 //signing the user to our application
-exports.signup = catchAysnc( async (req,res)=>{
+exports.signup =  async (req,res)=>{
       const user = await User.create(req.body);
 
       const url = `${req.protocol}://${req.get('host')}/api/v1/houses`;
       await new Email (user,url).sendWelcome();
   
     createSendToken(user, 201,res)
-});
+};
 
 
 //logging the user to our application
@@ -113,32 +113,32 @@ exports.forgotPassword = catchAysnc( async(req,res,next) => {
   // getting the user based on email address
   const user = await User.findOne({email : req.body.email});
 
-  if (!user){
-      return next(new AppError('invalid email',404));
+    if (!user){
+        return next(new AppError('invalid email',404));
+    }
+
+    //generate the reset token
+    const setToken = user.createToken();
+    await user.save({validateBeforeSave : false});
+
+  try {
+    const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${setToken}`;
+    await new Email (user,resetURL).sendResetPassword();
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Token sent to email!'
+    });
+  } catch (err) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    return next(
+      new AppError('There was an error sending the email. Try again later!'),
+      500
+    );
   }
-
-  //generate the reset token
-  const setToken = user.createToken();
-  await user.save({validateBeforeSave : false});
-
-try {
-  const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${setToken}`;
-  await new Email (user,resetURL).sendResetPassword();
-
-  res.status(200).json({
-    status: 'success',
-    message: 'Token sent to email!'
-  });
-} catch (err) {
-  user.passwordResetToken = undefined;
-  user.passwordResetExpires = undefined;
-  await user.save({ validateBeforeSave: false });
-
-  return next(
-    new AppError('There was an error sending the email. Try again later!'),
-    500
-  );
-}
 
 });
 
