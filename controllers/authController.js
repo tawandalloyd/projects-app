@@ -30,13 +30,13 @@ const createSendToken = (user, statusCode, res) => {
   };
 
 //register the user to our application
-exports.signup = catchAysnc (async (req,res,next)=>{
+exports.signup =async (req,res)=>{
 
    const user = await User.create(req.body);
     createSendToken(user, 201,res)
 
    return next(new AppError('duplicate email',404))
-});
+};
 
 
 //logging the user to our application
