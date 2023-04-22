@@ -16,7 +16,6 @@ const signToken = id => {
 
 
 const createSendToken = (user, statusCode, res) => {
-  try {
     const token = signToken(user._id);
     // Remove password from output
     user.password = undefined;
@@ -27,20 +26,13 @@ const createSendToken = (user, statusCode, res) => {
         user
       }
     });
-  } catch (error) {
-    res.status(statusCode).json({
-      status : 'error',
-      message : `something broke ${error}`
-    })
-  }
   };
 
 //signing the user to our application
-exports.signup =  async (req,res)=>{
-  const user = await User.create(req.body);  
-      
+exports.signup = catchAysnc(  async (req, res , next)=>{
+      const user = await User.create(req.body);  
    createSendToken(user, 201,res)
-};
+});
 
 
 //logging the user to our application
