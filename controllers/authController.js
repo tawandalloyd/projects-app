@@ -59,7 +59,7 @@ exports.signup = async (req,res)=>{
       }
 
 
-        //createSendToken(user, 201,res)
+        createSendToken(user, 201,res)
 };
 
 
