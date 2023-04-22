@@ -19,7 +19,7 @@ const createSendToken = (user, statusCode, res) => {
     const token = signToken(user._id);
     // Remove password from output
     user.password = undefined;
-    res.status(statusCode).json({
+    res.status(201).json({
       status: 'success',
       token,
       data: {
@@ -29,10 +29,25 @@ const createSendToken = (user, statusCode, res) => {
   };
 
 //signing the user to our application
-exports.signup =   async (req, res , next)=>{
-      const user = await User.create(req.body);  
-   createSendToken(user, 201,res)
-   next();
+exports.signup = async(req, res , next)=>{
+  try {
+    const newUser = User.create(req.body);
+    const token = signToken(newUser._id);
+    res.status(201).json({
+      status: 'success',
+      token,
+      data: {
+        newUser
+      }
+    });  
+  } catch (error) {
+    res.status(404).json({
+      status : 'error',
+      message : `ooops ${error}`
+    })  
+  }
+  next();
+  
 };
 
 
