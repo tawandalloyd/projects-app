@@ -52,7 +52,7 @@ exports.signup = async (req,res)=>{
         res.status(404).json({
           status : "error",
           message :{
-            message : "ooops something crushed our server",
+            message : `ooops something crushed our server ${e}`,
             e
           }
         })
