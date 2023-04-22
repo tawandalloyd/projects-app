@@ -34,8 +34,6 @@ exports.signup =async (req,res)=>{
 
    const user = await User.create(req.body);
     createSendToken(user, 201,res)
-
-   return next(new AppError('duplicate email',404))
 };
 
 
