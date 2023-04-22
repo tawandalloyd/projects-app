@@ -19,7 +19,8 @@ const createSendToken = (user, statusCode, res) => {
     const token = signToken(user._id);
     // Remove password from output
     user.password = undefined;
-    res.status(201).json({
+  
+    res.status(statusCode).json({
       status: 'success',
       token,
       data: {
@@ -28,27 +29,14 @@ const createSendToken = (user, statusCode, res) => {
     });
   };
 
-//signing the user to our application
-exports.signup = async(req, res , next)=>{
-  try {
-    const newUser = User.create(req.body);
-    const token = signToken(newUser._id);
-    res.status(201).json({
-      status: 'success',
-      token,
-      data: {
-        newUser
-      }
-    });  
-  } catch (error) {
-    res.status(404).json({
-      status : 'error',
-      message : `ooops ${error}`
-    })  
-  }
-  next();
-  
-};
+//register the user to our application
+exports.signup = catchAysnc (async (req,res,next)=>{
+
+   const user = await User.create(req.body);
+    createSendToken(user, 201,res)
+
+   return next(new AppError('duplicate email',404))
+});
 
 
 //logging the user to our application
@@ -116,32 +104,32 @@ exports.forgotPassword = catchAysnc( async(req,res,next) => {
   // getting the user based on email address
   const user = await User.findOne({email : req.body.email});
 
-    if (!user){
-        return next(new AppError('invalid email',404));
-    }
-
-    //generate the reset token
-    const setToken = user.createToken();
-    await user.save({validateBeforeSave : false});
-
-  try {
-    const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${setToken}`;
-    await new Email (user,resetURL).sendResetPassword();
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Token sent to email!'
-    });
-  } catch (err) {
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
-    await user.save({ validateBeforeSave: false });
-
-    return next(
-      new AppError('There was an error sending the email. Try again later!'),
-      500
-    );
+  if (!user){
+      return next(new AppError('invalid email',404));
   }
+
+  //generate the reset token
+  const setToken = user.createToken();
+  await user.save({validateBeforeSave : false});
+
+try {
+  const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${setToken}`;
+  await new Email (user,resetURL).sendResetPassword();
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Token sent to email!'
+  });
+} catch (err) {
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save({ validateBeforeSave: false });
+
+  return next(
+    new AppError('There was an error sending the email. Try again later!'),
+    500
+  );
+}
 
 });
 
