@@ -36,11 +36,11 @@ const createSendToken = (user, statusCode, res) => {
   };
 
 //signing the user to our application
-exports.signup = catchAysnc(  async (req,res)=>{
+exports.signup =  async (req,res)=>{
   const user = await User.create(req.body);  
       
    createSendToken(user, 201,res)
-});
+};
 
 
 //logging the user to our application
