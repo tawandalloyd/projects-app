@@ -44,7 +44,7 @@ exports.signup =  async (req,res)=>{
       const url = `${req.protocol}://${req.get('host')}/api/v1/houses`;
       await new Email (user,url).sendWelcome();
   
-    createSendToken(user, 201,res)
+   // createSendToken(user, 201,res)
 };
 
 
