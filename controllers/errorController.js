@@ -1,4 +1,4 @@
-const AppError = require('./../utils/appError');
+import AppError from './../utils/appError';
 
 const handleCastErrorDB = err => {
     const message = `Invalid ${err.path}: ${err.value}.`;
@@ -57,7 +57,7 @@ const handleCastErrorDB = err => {
   };
 
 
-module.exports = (err, req, res, next) =>{
+export default (err, req, res, next) =>{
     err.statusCode = err.statusCode || 500;
     err.status = err.status || 'fail';
 
@@ -77,8 +77,8 @@ module.exports = (err, req, res, next) =>{
         sendErrorProd(error, res);
       }
 
-    // res.status(statusCode).json({
-    //     status : err.status,
-    //     message : err.message
-    // });
+    res.status(statusCode).json({
+        status : err.status,
+        message : err.message
+    });
 }
