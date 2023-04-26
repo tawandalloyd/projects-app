@@ -92,8 +92,7 @@ exports.login =  async (req,res,next) => {
   }
   catch(error){
     res.status(404).json({
-      status : "email address is incorrect something bad happened",
-      error : error
+      status : "email address is incorrect",
     })
   }    
 };
