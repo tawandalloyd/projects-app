@@ -63,16 +63,22 @@ exports.login =  async (req,res,next) => {
     const {email,password} = req.body
     
     if(!email || !password){
-        return next (new AppError('please provide email or password', 404))
+      return res.status(401).send({
+        message : "please provide email address or password"
+      })
     }
     const user =  await User.findOne({email}).select('+password');
     const token = signToken(user._id);
     if ( user.isVerified == false){
-      return next(new AppError('email address not verified',401));
+      return res.status(401).send({
+        message : "user not verified"
+      })
     }
 
     else if(!user || !(await user.correctPassword(password,user.password))){
-        return next(new AppError('invalid email or password', 401));
+      return res.status(401).send({
+        message : "invalid email or password"
+      })
     }    
     // Remove password from output
     user.password = undefined;
