@@ -58,23 +58,39 @@ try {
 
 
 //logging the user to our application
-exports.login = catchAysnc( async (req,res,next) => {
+exports.login =  async (req,res,next) => {
+  try{
     const {email,password} = req.body
-   
+    
     if(!email || !password){
         return next (new AppError('please provide email or password', 404))
     }
-
     const user =  await User.findOne({email}).select('+password');
+    const token = signToken(user._id);
     if ( user.isVerified == false){
       return next(new AppError('email address not verified',401));
     }
 
     else if(!user || !(await user.correctPassword(password,user.password))){
         return next(new AppError('invalid email or password', 401));
-    }
-    createSendToken(user,201,res)
-});
+    }    
+    // Remove password from output
+    user.password = undefined;
+    res.status(200).json({
+      status: 'success',
+      token,
+      data: {
+        user
+      }
+    });
+  }
+  catch(error){
+    res.status(404).json({
+      status : "something bad happened",
+      error
+    })
+  }    
+};
 
 //protecting our routes from unAuthenticated users
 exports.protect = catchAysnc( async(req  , res , next) => {
