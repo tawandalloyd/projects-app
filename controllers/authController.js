@@ -30,7 +30,7 @@ const createSendToken = (user, statusCode, res) => {
   };
 
 //register the user to our application
-exports.signup =catchAsync (async (req,res)=>{
+exports.signup = catchAysnc (async (req,res)=>{
 
    const user = await User.create(req.body);
     createSendToken(user, 201,res)
