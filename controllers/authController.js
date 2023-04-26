@@ -77,7 +77,7 @@ exports.login =  async (req,res,next) => {
 
     else if(!user || !(await user.correctPassword(password,user.password))){
       return res.status(401).send({
-        message : "invalid email or password"
+        message : "invalid password"
       })
     }    
     // Remove password from output
@@ -92,8 +92,8 @@ exports.login =  async (req,res,next) => {
   }
   catch(error){
     res.status(404).json({
-      status : "something bad happened",
-      error
+      status : "email address is incorrect something bad happened",
+      error : error
     })
   }    
 };
