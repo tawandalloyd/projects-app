@@ -43,17 +43,17 @@ try {
     data: {
       user
     }
-  });
+  })
+  const url = `${req.protocol}://${req.get('host')}/api/v1/dashboard`;
+  await new Email (user,url).sendWelcome();
+
 } catch (error) {
   res.status(400).json({
     status : "error",
     message : error
   })
   
-}
-
-  
-  
+}  
 };
 
 

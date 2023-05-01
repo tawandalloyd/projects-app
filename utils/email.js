@@ -11,21 +11,32 @@ module.exports = class Email {
     }
 
     newTransport(){
-        if (process.env.NODE_ENV === 'production') {
-            
-            return 1;
-        }
-
-        return  nodemailer.createTransport({
-            host : process.env.EMAIL_HOST,
-            port: process.env.EMAIL_PORT,
-            auth: {
-                user: process.env.EMAIL_USERNAME,
-                pass: process.env.EMAIL_PASSWORD
+         return nodemailer.createTransport({
+            service: 'Sendgrid',
+            auth : {
+                pass : process.env.SENDGRID_API_KEY
             }
-        });
-
+         })
     }
+
+    // newTransport(){
+    //     if (process.env.NODE_ENV === 'production') {
+            
+    //         return nodemailer.createTransport({
+                
+    //         });
+    //     }
+
+        // return  nodemailer.createTransport({
+        //     host : process.env.EMAIL_HOST,
+        //     port: process.env.EMAIL_PORT,
+        //     auth: {
+        //         user: process.env.EMAIL_USERNAME,
+        //         pass: process.env.EMAIL_PASSWORD
+        //     }
+        // });
+
+    //}
      async send(template,subject){
        //render html based on pug template
        const html = pug.renderFile(`${__dirname}/../views/emails/${template}.pug`,
